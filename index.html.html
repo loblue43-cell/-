@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>하루 기록</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f7;--card:#fff;--ink:#1d2640;--mut:#667290;--line:#dde2ee;--acc:#4f5fe0;--accsoft:#e3e6fd;--ok:#2fa57d;--oksoft:#dcf3ea;--onacc:#fff;
+color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a2e;--card:#1e2640;--ink:#e8ecf8;--mut:#9aa5c4;--line:#2d3757;--acc:#8d9bff;--accsoft:#2b3466;--ok:#4fcf9f;--oksoft:#1c3d36;--onacc:#10163a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141a2e;--card:#1e2640;--ink:#e8ecf8;--mut:#9aa5c4;--line:#2d3757;--acc:#8d9bff;--accsoft:#2b3466;--ok:#4fcf9f;--oksoft:#1c3d36;--onacc:#10163a;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+main{max-width:560px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:18px}
+.date{text-align:center;flex:1}
+.date h1{margin:0;font-size:1.35rem;font-weight:700;letter-spacing:-.01em}
+.date small{color:var(--mut)}
+.nav{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:1.1rem;cursor:pointer}
+.today{display:block;margin:6px auto 0;border:0;background:none;color:var(--acc);font:inherit;font-size:.85rem;cursor:pointer;padding:2px 8px}
+section{background:var(--card);border-radius:20px;padding:18px;margin-bottom:14px}
+h2{margin:0 0 12px;font-size:1rem;font-weight:600;display:flex;justify-content:space-between;align-items:baseline}
+h2 span{font-size:.85rem;font-weight:500;color:var(--mut)}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.moods{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.mood{border:1.5px solid var(--line);background:none;border-radius:16px;padding:10px 0 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .12s,background .12s}
+.mood b{font-size:1.7rem;line-height:1.2;font-weight:400}
+.mood i{font-style:normal;font-size:.75rem;color:var(--mut)}
+.mood[aria-pressed="true"]{background:var(--accsoft);border-color:var(--acc);transform:translateY(-2px)}
+.mood[aria-pressed="true"] i{color:var(--ink);font-weight:600}
+.sleep{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sleep label{display:block;font-size:.8rem;color:var(--mut);margin-bottom:4px}
+input[type=time],input[type=text]{width:100%;border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;min-height:44px}
+.sleepsum{margin-top:12px;font-size:1.5rem;font-weight:700;letter-spacing:-.01em}
+.sleepsum small{font-size:.85rem;font-weight:500;color:var(--mut);margin-left:6px}
+.row{display:flex;align-items:center;gap:10px;padding:6px 0}
+.chk{flex:none;width:26px;height:26px;border-radius:8px;border:2px solid var(--line);background:none;cursor:pointer;display:grid;place-items:center;color:transparent;font-size:.9rem;font-weight:700}
+.chk[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.row .t{flex:1;word-break:break-word}
+.row.done .t{color:var(--mut);text-decoration:line-through}
+.x{flex:none;border:0;background:none;color:var(--mut);cursor:pointer;width:32px;height:32px;border-radius:8px;font-size:1.1rem}
+.x:hover{background:var(--bg)}
+.add{display:flex;gap:8px;margin-top:10px}
+.btn{flex:none;border:0;border-radius:12px;background:var(--acc);color:var(--onacc);font-weight:600;padding:0 16px;min-height:44px;cursor:pointer}
+.empty{color:var(--mut);font-size:.9rem;margin:2px 0 4px}
+.bar-note{background:var(--oksoft);color:var(--ok);border-radius:10px;padding:2px 10px;font-size:.8rem;font-weight:600}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;height:140px}
+.col{border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;cursor:pointer;padding:0}
+.col .bar{width:100%;max-width:30px;border-radius:8px 8px 4px 4px;background:var(--accsoft);min-height:4px}
+.col.has .bar{background:var(--acc)}
+.col.sel .bar{outline:2px solid var(--ink);outline-offset:2px}
+.col em{font-style:normal;font-size:.7rem;color:var(--mut)}
+.col span{font-size:.95rem;min-height:1.3em}
+.col small{font-size:.72rem;color:var(--mut)}
+.col.sel small{color:var(--ink);font-weight:700}
+.foot{text-align:center;color:var(--mut);font-size:.78rem;margin-top:8px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <button class="nav" id="prev" aria-label="전날">‹</button>
+  <div class="date"><h1 id="title"></h1><small id="sub"></small><button class="today" id="today">오늘로 이동</button></div>
+  <button class="nav" id="next" aria-label="다음날">›</button>
+</header>
+
+<section aria-labelledby="h-mood">
+  <h2 id="h-mood">오늘의 기분</h2>
+  <div class="moods" id="moods"></div>
+</section>
+
+<section aria-labelledby="h-sleep">
+  <h2 id="h-sleep">수면</h2>
+  <div class="sleep">
+    <div><label for="bed">잠든 시간</label><input type="time" id="bed"></div>
+    <div><label for="wake">일어난 시간</label><input type="time" id="wake"></div>
+  </div>
+  <div class="sleepsum" id="sleepsum"></div>
+</section>
+
+<section aria-labelledby="h-plan">
+  <h2 id="h-plan">오늘의 계획 <span id="planCount"></span></h2>
+  <div id="plans"></div>
+  <div class="add"><input type="text" id="planIn" placeholder="할 일을 입력하세요" aria-label="새 계획" maxlength="80"><button class="btn" id="planAdd">추가</button></div>
+</section>
+
+<section aria-labelledby="h-supp">
+  <h2 id="h-supp">영양제 <span id="suppCount"></span></h2>
+  <div id="supps"></div>
+  <div class="add"><input type="text" id="suppIn" placeholder="영양제 이름 추가" aria-label="새 영양제" maxlength="30"><button class="btn" id="suppAdd">추가</button></div>
+</section>
+
+<section aria-labelledby="h-week">
+  <h2 id="h-week">최근 7일 수면 <span id="avg"></span></h2>
+  <div class="week" id="week"></div>
+  <div class="foot">막대를 누르면 그날의 기록을 볼 수 있어요</div>
+</section>
+<div class="foot">기록은 이 기기의 브라우저에만 저장돼요.</div>
+</main>
+
+<script>
+(function(){
+var KEY='daily-log-v1', MOODS=[['😞','힘듦'],['🙁','별로'],['😐','보통'],['🙂','좋음'],['😄','최고']];
+var DAYS=['일','월','화','수','목','금','토'];
+var db={days:{},supps:['비타민D','오메가3','유산균']};
+try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&p.days)db=p;}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db));}catch(e){}}
+function $(id){return document.getElementById(id);}
+function fmt(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function parse(s){var a=s.split('-');return new Date(+a[0],+a[1]-1,+a[2]);}
+var cur=fmt(new Date());
+function day(k){k=k||cur;if(!db.days[k])db.days[k]={mood:0,bed:'',wake:'',plans:[],supp:{}};return db.days[k];}
+function sleepMin(d){if(!d||!d.bed||!d.wake)return null;var b=d.bed.split(':'),w=d.wake.split(':');var m=(+w[0]*60+ +w[1])-(+b[0]*60+ +b[1]);return (m+1440)%1440;}
+function hm(m){return Math.floor(m/60)+'시간 '+(m%60?m%60+'분':'');}
+function esc(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+function renderHead(){
+  var d=parse(cur),t=new Date();
+  $('title').textContent=(d.getMonth()+1)+'월 '+d.getDate()+'일 '+DAYS[d.getDay()]+'요일';
+  $('sub').textContent=d.getFullYear()+(cur===fmt(t)?' · 오늘':'');
+  $('today').style.display=cur===fmt(t)?'none':'block';
+}
+function renderMood(){
+  var m=day().mood;
+  $('moods').innerHTML=MOODS.map(function(x,i){return '<button class="mood" data-i="'+(i+1)+'" aria-pressed="'+(m===i+1)+'"><b>'+x[0]+'</b><i>'+x[1]+'</i></button>';}).join('');
+}
+function renderSleep(){
+  var d=day();$('bed').value=d.bed;$('wake').value=d.wake;sumSleep();
+}
+function sumSleep(){
+  var m=sleepMin(day());
+  $('sleepsum').innerHTML=m==null?'<small style="margin:0">시간을 입력하면 수면 시간이 계산돼요</small>':hm(m)+(m>=420&&m<=540?'<small>충분히 잤어요</small>':m<360?'<small>조금 부족해요</small>':'');
+}
+function renderPlans(){
+  var l=day().plans,n=l.filter(function(p){return p.d;}).length;
+  $('planCount').textContent=l.length?n+'/'+l.length+' 완료':'';
+  $('plans').innerHTML=l.length?l.map(function(p,i){return '<div class="row'+(p.d?' done':'')+'"><button class="chk" data-p="'+i+'" aria-pressed="'+!!p.d+'" aria-label="완료 표시">✓</button><span class="t">'+esc(p.t)+'</span><button class="x" data-dp="'+i+'" aria-label="삭제">×</button></div>';}).join(''):'<p class="empty">아직 계획이 없어요. 오늘 할 일을 하나 적어보세요.</p>';
+}
+function renderSupps(){
+  var s=day().supp,n=db.supps.filter(function(x){return s[x];}).length;
+  $('suppCount').textContent=db.supps.length?n+'/'+db.supps.length+' 복용':'';
+  $('supps').innerHTML=db.supps.length?db.supps.map(function(x,i){return '<div class="row'+(s[x]?' done':'')+'"><button class="chk" data-s="'+i+'" aria-pressed="'+!!s[x]+'" aria-label="복용 표시">✓</button><span class="t" style="'+(s[x]?'text-decoration:none;color:var(--ink)':'')+'">'+esc(x)+'</span><button class="x" data-ds="'+i+'" aria-label="목록에서 삭제">×</button></div>';}).join(''):'<p class="empty">챙겨 먹는 영양제를 추가해 보세요.</p>';
+}
+function renderWeek(){
+  var base=parse(cur),html='',tot=0,cnt=0;
+  for(var i=6;i>=0;i--){
+    var d=new Date(base);d.setDate(d.getDate()-i);var k=fmt(d),r=db.days[k],m=sleepMin(r);
+    if(m!=null){tot+=m;cnt++;}
+    var h=m!=null?Math.max(6,Math.min(100,m/600*100)):4;
+    html+='<button class="col'+(m!=null?' has':'')+(k===cur?' sel':'')+'" data-k="'+k+'" aria-label="'+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+(m!=null?hm(m):'기록 없음')+'"><span>'+(r&&r.mood?MOODS[r.mood-1][0]:'')+'</span><em>'+(m!=null?(m/60).toFixed(1):'')+'</em><div class="bar" style="height:'+h*0.7+'px"></div><small>'+DAYS[d.getDay()]+'</small></button>';
+  }
+  $('week').innerHTML=html;
+  $('avg').textContent=cnt?'평균 '+(tot/cnt/60).toFixed(1)+'시간':'';
+}
+function all(){renderHead();renderMood();renderSleep();renderPlans();renderSupps();renderWeek();}
+
+function go(n){var d=parse(cur);d.setDate(d.getDate()+n);cur=fmt(d);all();}
+$('prev').onclick=function(){go(-1);};
+$('next').onclick=function(){go(1);};
+$('today').onclick=function(){cur=fmt(new Date());all();};
+$('moods').onclick=function(e){var b=e.target.closest('.mood');if(!b)return;var d=day(),v=+b.dataset.i;d.mood=d.mood===v?0:v;save();renderMood();renderWeek();};
+$('bed').onchange=function(){day().bed=this.value;save();sumSleep();renderWeek();};
+$('wake').onchange=function(){day().wake=this.value;save();sumSleep();renderWeek();};
+function addPlan(){var v=$('planIn').value.trim();if(!v)return;day().plans.push({t:v,d:0});$('planIn').value='';save();renderPlans();}
+$('planAdd').onclick=addPlan;
+$('planIn').onkeydown=function(e){if(e.key==='Enter'&&!e.isComposing)addPlan();};
+$('plans').onclick=function(e){var c=e.target.closest('[data-p]'),x=e.target.closest('[data-dp]'),d=day();
+  if(c){var p=d.plans[+c.dataset.p];p.d=p.d?0:1;}else if(x){d.plans.splice(+x.dataset.dp,1);}else return;save();renderPlans();};
+function addSupp(){var v=$('suppIn').value.trim();if(!v||db.supps.indexOf(v)>-1)return;db.supps.push(v);$('suppIn').value='';save();renderSupps();}
+$('suppAdd').onclick=addSupp;
+$('suppIn').onkeydown=function(e){if(e.key==='Enter'&&!e.isComposing)addSupp();};
+$('supps').onclick=function(e){var c=e.target.closest('[data-s]'),x=e.target.closest('[data-ds]');
+  if(c){var n=db.supps[+c.dataset.s],s=day().supp;s[n]=!s[n];}
+  else if(x){var nm=db.supps[+x.dataset.ds];if(!confirm('"'+nm+'"을(를) 목록에서 삭제할까요?'))return;db.supps.splice(+x.dataset.ds,1);}else return;save();renderSupps();};
+$('week').onclick=function(e){var c=e.target.closest('[data-k]');if(!c)return;cur=c.dataset.k;all();};
+all();
+})();
+</script>
+</body>
+</html>
